@@ -1,0 +1,2 @@
+rootProject.name='uiuc-toilet_android'
+include ':app'
