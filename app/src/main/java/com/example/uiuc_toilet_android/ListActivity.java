@@ -16,18 +16,22 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.location.Location.distanceBetween;
+import static com.example.uiuc_toilet_android.MapsActivity.latitude;
+import static com.example.uiuc_toilet_android.MapsActivity.longitude;
+
 public class ListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ListAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     List<Bathroom> brList = new ArrayList<>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         buildRecyclerView();
-
 
         //initialize bottom navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -37,7 +41,7 @@ public class ListActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_map:
-                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                        finish();
                         overridePendingTransition(0, 0);
                         return true;
                     case R.id.nav_list:
@@ -55,5 +59,11 @@ public class ListActivity extends AppCompatActivity {
         adapter = new ListAdapter(brList);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void getBathrooms(){
+        float[] distance = new float[1];
+        //distanceBetween(latitude, longitude, geolocation.getDouble("latitude"), geolocation.getDouble("longitude"), distance);
+        double locationDistance = (double) distance[0];
     }
 }
