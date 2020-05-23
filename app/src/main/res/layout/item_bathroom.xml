@@ -1,29 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
+    android:layout_width= "match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    >
-
-    <TextView
-        android:id="@+id/bathroom_name"
-        android:layout_width="0dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Bathroom Name"
-        android:paddingStart="10dp"
-        android:paddingLeft="10dp" />
+        android:layout_margin="8dp"
+        android:orientation="vertical"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="2dp"
+        app:strokeWidth="1dp" >
 
-    <TextView
-        android:id="@+id/distance"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:gravity="right"
-        android:layout_weight="1"
-        android:text="Distance Away"
-        android:paddingEnd="10dp"
-        android:paddingRight="10dp" />
-</LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/top_bar">
+
+                <TextView
+                    android:id="@+id/bathroom_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/default_name"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/ic_male"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@+id/bathroom_name"
+                    android:contentDescription="@string/male_icon"
+                    android:src="@drawable/ic_human_male" />
+
+                <ImageView
+                    android:id="@+id/ic_female"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toEndOf="@+id/ic_male"
+                    android:layout_toRightOf="@+id/ic_male"
+                    android:contentDescription="@string/female_icon"
+                    android:src="@drawable/ic_human_female" />
+
+                <TextView
+                    android:id="@+id/distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:gravity="end"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/default_distance"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/bottom_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/top_bar">
+
+                <TextView
+                    android:id="@+id/status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:gravity="end"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/status"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/hours_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00 - 24:00" />
+
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
