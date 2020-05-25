@@ -54,12 +54,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
         holder.distance.setText(parseDistance(currentItem.getDistanceFromUser()));
 
         switch(currentItem.getGender()){
-            case "male":
+            case "Male":
                 holder.male.setColorFilter(res.getColor(R.color.male));
                 break;
-            case "female":
+            case "Female":
                 holder.female.setColorFilter(res.getColor(R.color.female));
-            case "both":
+            case "Both":
                 holder.male.setColorFilter(res.getColor(R.color.male));
                 holder.female.setColorFilter(res.getColor(R.color.female));
             default:

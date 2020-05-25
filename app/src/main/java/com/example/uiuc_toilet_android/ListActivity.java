@@ -1,12 +1,21 @@
 package com.example.uiuc_toilet_android;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +27,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
@@ -29,15 +39,16 @@ import java.util.List;
 import java.util.Map;
 
 import static android.location.Location.distanceBetween;
-import static com.example.uiuc_toilet_android.MapsActivity.latitude;
-import static com.example.uiuc_toilet_android.MapsActivity.longitude;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity{
     private String BASE_URL = "http://192.168.3.10:3000";
     RecyclerView recyclerView;
     ListAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     List<Bathroom> brList = new ArrayList<>();
+
+    private double latitude;
+    private double longitude;
 
 
     @Override
@@ -64,7 +75,42 @@ public class ListActivity extends AppCompatActivity {
             }
         });
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ListActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }else{
+            LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            if(lm != null){
+                Location curr = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                if(curr != null){
+                    latitude = curr.getLatitude();
+                    longitude = curr.getLongitude();
+                }
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000 , 5, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        getBathrooms(location.getLatitude(), location.getLongitude());
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String provider) {
+
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+
+                    }
+                });
+            }
+        }
+
         getBathrooms(latitude, longitude);
+
     }
 
     private void buildRecyclerView() {
@@ -92,8 +138,8 @@ public class ListActivity extends AppCompatActivity {
                                 String id = br.getString("_id");
                                 String name = br.getString("name");
                                 String gender = br.getString("gender");
-                                double brLatitude = br.getDouble("latitude");
-                                double brLongitude = br.getDouble("longitude");
+                                double brLatitude = Double.parseDouble(br.getString("latitude"));
+                                double brLongitude = Double.parseDouble(br.getString("longitude"));
                                 double openTime = br.getDouble("openTime");
                                 double closeTime = br.getDouble("closeTime");
                                 float[] distance = new float[1];

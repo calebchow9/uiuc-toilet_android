@@ -15,6 +15,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -37,7 +42,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.location.Location.distanceBetween;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private String BASE_URL = "http://192.168.3.10:3000";
+    private List<Bathroom> brList = new ArrayList<>();
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -45,8 +61,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int DEFAULT_ZOOM = 18;
     private static final String TAG = "tag";
 
-    static double latitude = 0.0;
-    static double longitude = 0.0;
+    private double latitude;
+    private double longitude;
 
     double prev_latitude;
     double prev_longitude;
@@ -101,11 +117,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(40.107861, -88.227225);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
         getLocationPermission();
         updateLocationUI();
         getInitialDeviceLocation();
@@ -155,6 +166,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 if(mLastKnownLocation.getLatitude() - prev_latitude != 0 || mLastKnownLocation.getLongitude() - prev_longitude != 0){
                                     Log.d("tag", "moved");
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), zoom));
+                                    getMarkers(latitude, longitude);
                                 }
                             }
                         }
@@ -204,6 +216,54 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private void getMarkers(final double latitude, final double longitude){
+        RequestQueue queue;
+        queue = Volley.newRequestQueue(this);
+
+        JsonArrayRequest stringRequest = new JsonArrayRequest(com.android.volley.Request.Method.GET, BASE_URL+"/bathroom", null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d("info", response.toString());
+                        brList.clear();
+                        try{
+                            for(int i = 0; i < response.length(); i++){
+                                JSONObject br = response.getJSONObject(i);
+                                String id = br.getString("_id");
+                                String name = br.getString("name");
+                                String gender = br.getString("gender");
+                                double brLatitude = Double.parseDouble(br.getString("latitude"));
+                                double brLongitude = Double.parseDouble(br.getString("longitude"));
+                                double openTime = br.getDouble("openTime");
+                                double closeTime = br.getDouble("closeTime");
+                                float[] distance = new float[1];
+                                distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
+                                double locationDistance = distance[0];
+                                Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance);
+                                brList.add(bathroom);
+                            }
+                            for(int i = 0; i < brList.size(); i++){
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(brList.get(i).getLatitude(), brList.get(i).getLongitude()))
+                                        .title(parseBathroomTitle(brList.get(i)))
+                                        .snippet(parseBathroomInfo(brList.get(i))));
+                            }
+
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        queue.add(stringRequest);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -234,7 +294,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onLocationChanged(Location location) {
-        String msg = "Updated Location: " + Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
+        String msg = "Updated Location: " + location.getLatitude() + "," + location.getLongitude();
         Log.d("location", msg);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         prev_latitude = latitude;
@@ -242,6 +302,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         getDeviceLocation(mMap.getCameraPosition().zoom);
+    }
+
+    private String parseBathroomTitle(Bathroom br){
+        return br.getName() + ", type: " + br.getGender();
+    }
+
+    private String parseBathroomInfo(Bathroom br){
+        DecimalFormat df = new DecimalFormat("#.#");
+        return  "Distance: " + df.format(br.getDistanceFromUser()) + "m";
     }
 
 

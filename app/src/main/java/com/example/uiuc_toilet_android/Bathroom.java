@@ -12,7 +12,7 @@ public class Bathroom {
     private double latitude;
     private double distanceFromUser;
 
-    public Bathroom(String id, String name, String gender, double openTime, double closeTime, double longitude, double latitude, double distanceFromUser) {
+    public Bathroom(String id, String name, String gender, double openTime, double closeTime, double latitude, double longitude, double distanceFromUser) {
         this.id = id;
         this.name = name;
         this.gender = gender;

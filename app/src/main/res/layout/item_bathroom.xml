@@ -26,18 +26,19 @@
                     android:id="@+id/bathroom_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
+                    android:layout_toRightOf="@+id/ic_female"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:text="@string/default_name"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:layout_toEndOf="@+id/ic_female" />
 
                 <ImageView
                     android:id="@+id/ic_male"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_toRightOf="@+id/bathroom_name"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:contentDescription="@string/male_icon"
                     android:src="@drawable/ic_human_male" />
 
