@@ -2,17 +2,23 @@
     <string name="app_name">uiuc-toilet_android</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_list">ListActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+
+    <!-- Bathroom item card -->
     <string name="default_name">Bathroom Name</string>
     <string name="default_distance">Distance Away</string>
     <string name="male_icon">Male Icon</string>
     <string name="female_icon">Female Icon</string>
     <string name="status">Status</string>
 
-    <!-- Bathroom item card -->
 
+    <!-- List Top Bar -->
+    <string name="bar_search">Search</string>
+    <string name="bar_favorite">Favorite</string>
+
+    <!-- Navigation Bar -->
+    <string name="menu_list">List</string>
+    <string name="menu_map">Map</string>
+    <string name="bar_more">More</string>
 
 
 </resources>

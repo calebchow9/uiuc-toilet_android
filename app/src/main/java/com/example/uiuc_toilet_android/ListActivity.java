@@ -2,18 +2,21 @@ package com.example.uiuc_toilet_android;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -26,17 +29,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.location.Location.distanceBetween;
 
@@ -46,6 +46,7 @@ public class ListActivity extends AppCompatActivity{
     ListAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     List<Bathroom> brList = new ArrayList<>();
+    Bathroom deletedBR;
 
     private double latitude;
     private double longitude;
@@ -113,6 +114,49 @@ public class ListActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.favorite:
+                return true;
+            case R.id.search:
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                        SearchView searchView = (SearchView) item.getActionView();
+                        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                searchBathroom(query);
+                                return false;
+                            }
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                return false;
+                            }
+                        });
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                        getBathrooms(latitude, longitude);
+                        return true;
+                    }
+                });
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void buildRecyclerView() {
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -120,6 +164,8 @@ public class ListActivity extends AppCompatActivity{
         adapter = new ListAdapter(brList);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipe);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     private void getBathrooms(final double latitude, final double longitude){
@@ -163,5 +209,106 @@ public class ListActivity extends AppCompatActivity{
             }
         });
         queue.add(stringRequest);
+    }
+
+    ItemTouchHelper.SimpleCallback swipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
+
+            final int position = viewHolder.getAdapterPosition();
+
+            switch (direction) {
+                case ItemTouchHelper.LEFT:
+                    deletedBR = brList.get(position);
+                    brList.remove(position);
+                    adapter.notifyItemRemoved(position);
+                    Snackbar.make(recyclerView,"Hid " + deletedBR.getName(), Snackbar.LENGTH_LONG)
+                            .setAction("Undo", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    brList.add(position, deletedBR);
+                                    adapter.notifyItemInserted(position);
+                                }
+                            }).show();
+                    break;
+                case ItemTouchHelper.RIGHT:
+                    final String bathroomName = brList.get(position).getName();
+                    SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                    String curr = sharedPref.getString("favorites", "");
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("favorites", curr + bathroomName + ",");
+                    editor.commit();
+
+                    Snackbar.make(recyclerView, "Favorited " + brList.get(position).getName(), Snackbar.LENGTH_LONG)
+                            .setAction("Undo", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    unFavorite(bathroomName);
+                                }
+                            }).show();
+                    adapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
+
+    private void unFavorite(String bathroomName){
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String curr = sharedPref.getString("favorites", "");
+        Log.d("fav", curr);
+        SharedPreferences.Editor editor = sharedPref.edit();
+    }
+
+    private void searchBathroom(String bathroomName){
+        JSONObject name = new JSONObject();
+        try{
+            name.put("name", bathroomName);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        RequestQueue queue;
+        queue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest stringRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST, BASE_URL+"/bathroom/name", name,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("info", response.toString());
+                        brList.clear();
+                        try{
+                            String id = response.getString("_id");
+                            String name = response.getString("name");
+                            String gender = response.getString("gender");
+                            double brLatitude = Double.parseDouble(response.getString("latitude"));
+                            double brLongitude = Double.parseDouble(response.getString("longitude"));
+                            double openTime = response.getDouble("openTime");
+                            double closeTime = response.getDouble("closeTime");
+                            float[] distance = new float[1];
+                            distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
+                            double locationDistance = distance[0];
+                            Bathroom bathroom = new Bathroom (id, name, gender, brLatitude, brLongitude, openTime, closeTime, locationDistance);
+                            brList.add(bathroom);
+                            adapter.notifyDataSetChanged();
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        queue.add(stringRequest);
+
     }
 }
