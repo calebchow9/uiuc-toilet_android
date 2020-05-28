@@ -4,6 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,6 +50,7 @@ public class ListActivity extends AppCompatActivity{
     RecyclerView.LayoutManager layoutManager;
     List<Bathroom> brList = new ArrayList<>();
     Bathroom deletedBR;
+    boolean favorite = false;
 
     private double latitude;
     private double longitude;
@@ -57,6 +61,15 @@ public class ListActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         buildRecyclerView();
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.main)));
+        }
+
+//        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+//        String curre = sharedPref.getString("favorites", "");
+//        SharedPreferences.Editor editor = sharedPref.edit();
+//        editor.putString("favorites",  "");
+//        editor.commit();
 
         //initialize bottom navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -125,6 +138,19 @@ public class ListActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.favorite:
+                Drawable drawable = item.getIcon();
+                if(!favorite){
+                    if(drawable != null){
+                        drawable.mutate();
+                        drawable.setColorFilter(getResources().getColor(R.color.female), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    favorite = true;
+                    getFavorites();
+                    return true;
+                }
+                drawable.clearColorFilter();
+                favorite = false;
+                getBathrooms(latitude, longitude);
                 return true;
             case R.id.search:
                 item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -134,6 +160,7 @@ public class ListActivity extends AppCompatActivity{
                         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                             @Override
                             public boolean onQueryTextSubmit(String query) {
+                                brList.clear();
                                 searchBathroom(query);
                                 return false;
                             }
@@ -225,6 +252,9 @@ public class ListActivity extends AppCompatActivity{
             switch (direction) {
                 case ItemTouchHelper.LEFT:
                     deletedBR = brList.get(position);
+                    if(favorite){
+                        unFavorite(deletedBR.getName());
+                    }
                     brList.remove(position);
                     adapter.notifyItemRemoved(position);
                     Snackbar.make(recyclerView,"Hid " + deletedBR.getName(), Snackbar.LENGTH_LONG)
@@ -243,6 +273,7 @@ public class ListActivity extends AppCompatActivity{
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("favorites", curr + bathroomName + ",");
                     editor.commit();
+                    Log.d("favorites", sharedPref.getString("Favorites", ""));
 
                     Snackbar.make(recyclerView, "Favorited " + brList.get(position).getName(), Snackbar.LENGTH_LONG)
                             .setAction("Undo", new View.OnClickListener() {
@@ -261,7 +292,33 @@ public class ListActivity extends AppCompatActivity{
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         String curr = sharedPref.getString("favorites", "");
         Log.d("fav", curr);
+        String[] favorites = curr.split(",");
+        for(int i = 0; i < favorites.length; i++){
+            if(favorites[i].equals(bathroomName)){
+                favorites[i] = "";
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String s : favorites) {
+            if(!s.equals("")) {
+                sb.append(s).append(",");
+            }
+        }
+        Log.d("removed", sb.toString());
         SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("favorites", sb.toString());
+        editor.commit();
+    }
+
+    private void getFavorites(){
+        brList.clear();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String curr = sharedPref.getString("favorites", "");
+        String[] favorites = curr.split(",");
+        for(String s : favorites){
+            searchBathroom(s);
+        }
+
     }
 
     private void searchBathroom(String bathroomName){
@@ -280,7 +337,6 @@ public class ListActivity extends AppCompatActivity{
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("info", response.toString());
-                        brList.clear();
                         try{
                             String id = response.getString("_id");
                             String name = response.getString("name");

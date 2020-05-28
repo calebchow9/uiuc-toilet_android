@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <RelativeLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@color/main">
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/MainTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="@string/create_bathroom"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/button_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            app:srcCompat="@drawable/ic_back_arrow"
+            android:contentDescription="@string/button_back" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/name_text"
+        style="@style/EditText_large"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="90dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:autofillHints="name"
+        android:hint="@string/bathroom_name"
+        android:inputType="textPersonName" />
+
+    <RelativeLayout
+        android:id="@+id/mid_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/top_layout">
+
+        <ImageView
+            android:id="@+id/location_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:contentDescription="@string/location"
+            android:tint="@color/secondary"
+            app:srcCompat="@drawable/ic_location" />
+
+        <TextView
+            android:id="@+id/location_text"
+            style="@style/DarkText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toEndOf="@+id/location_icon"
+            android:layout_toRightOf="@+id/location_icon"
+            android:text="@string/location_text_default"
+            android:layout_marginStart="10dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/mapCard"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_below="@id/location_icon"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_margin="20dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="12dp">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/hours_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/mapCard"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:contentDescription="@string/location"
+            android:tint="@color/main"
+            app:srcCompat="@drawable/ic_schedule_24px" />
+
+        <EditText
+            android:id="@+id/open_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mapCard"
+            android:layout_toEndOf="@+id/hours_icon"
+            android:layout_toRightOf="@+id/hours_icon"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:ems="3"
+            android:hint="@string/open_text"
+            android:textColorHint="@color/grey_text"
+            android:inputType="time"
+            android:autofillHints="12"
+            style="@style/DarkText"/>
+
+        <TextView
+            android:id="@+id/to_text"
+            android:layout_below="@id/mapCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/open_text"
+            android:layout_toRightOf="@+id/open_text"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="@string/to_text"
+            style="@style/DarkText" />
+
+        <EditText
+            android:id="@+id/close_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mapCard"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toEndOf="@+id/to_text"
+            android:layout_toRightOf="@+id/to_text"
+            android:ems="3"
+            android:hint="@string/close_text"
+            android:inputType="time"
+            android:textColorHint="@color/grey_text"
+            style="@style/DarkText"
+            android:autofillHints="12" />
+
+        <Button
+            android:id="@+id/male_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/open_text"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:drawableLeft="@drawable/ic_human_male"
+            android:text="@string/male_text"
+            android:drawableStart="@drawable/ic_human_male"
+            android:background="@drawable/button_rounded_wide"
+            android:backgroundTint="@color/grey_text"/>
+
+        <Button
+            android:id="@+id/female_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/open_text"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/male_button"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:drawableLeft="@drawable/ic_human_female"
+            android:text="@string/female_text"
+            android:drawableStart="@drawable/ic_human_male"
+            android:background="@drawable/button_rounded_wide"
+            android:backgroundTint="@color/grey_text"
+            android:layout_toEndOf="@id/male_button" />
+
+        <ImageView
+            android:id="@+id/person_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/male_button"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
+            android:contentDescription="@string/location"
+            android:tint="@color/main"
+            app:srcCompat="@drawable/ic_person" />
+
+        <EditText
+            android:id="@+id/username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:layout_toEndOf="@+id/person_icon"
+            android:layout_toRightOf="@+id/person_icon"
+            android:layout_below="@id/male_button"
+            android:layout_marginTop="10dp"
+            android:hint="@string/username_hint_text"
+            android:textColorHint="@color/grey_text"
+            android:autofillHints="" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/button_add"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/button_add_text"
+        android:textAllCaps="false"
+        style="@style/button_wide"
+        android:textSize="18sp" />
+
+</RelativeLayout>

@@ -14,9 +14,4 @@
         android:title="@string/bar_search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
-    <item
-        android:id="@+id/more"
-        android:contentDescription="@string/bar_more"
-        android:title="Settings"
-        app:showAsAction="never"/>
 </menu>

@@ -3,11 +3,18 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/main</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.BottomNavigation">
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="itemBackground">@color/main</item>
     </style>
 
     <style name="ClearTheme" parent="Theme.AppCompat.Light">
@@ -16,8 +23,17 @@
         <item name="windowActionBarOverlay">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="MainTheme">
+        <item name="colorPrimary">@color/main</item>
+        <item name="backgroundColor">@color/main</item>
+        <item name="android:textColor">@color/white_text</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="DarkText">
+        <item name="android:textColor">@color/main_dark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
 
 </resources>

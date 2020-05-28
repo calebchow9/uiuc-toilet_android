@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="button_wide">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/white_text</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:background">@drawable/button_rounded_wide</item>
+        <item name="android:backgroundTint">@color/secondary</item>
+    </style>
+
+    <style name="EditText_large">
+        <item name="android:background">@drawable/button_rounded_wide</item>
+        <item name="android:backgroundTint">@color/white_text</item>
+        <item name="android:textColorHint">@color/grey_text</item>
+    </style>
+</resources>

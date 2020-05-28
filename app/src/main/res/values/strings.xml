@@ -4,7 +4,7 @@
     <string name="title_activity_list">ListActivity</string>
 
     <!-- Bathroom item card -->
-    <string name="default_name">Bathroom Name</string>
+    <string name="default_name">Bathroom name</string>
     <string name="default_distance">Distance Away</string>
     <string name="male_icon">Male Icon</string>
     <string name="female_icon">Female Icon</string>
@@ -16,9 +16,22 @@
     <string name="bar_favorite">Favorite</string>
 
     <!-- Navigation Bar -->
-    <string name="menu_list">List</string>
+    <string name="menu_list">Nearby</string>
     <string name="menu_map">Map</string>
     <string name="bar_more">More</string>
+    <string name="button_add_text">Create</string>
+    <string name="button_back">Back</string>
+    <string name="create_bathroom">Create Bathroom</string>
+    <string name="bathroom_name">Bathroom name</string>
+    <string name="location_text_default">(Latitude, Longitude)</string>
+    <string name="location">Location</string>
+    <string name="username_hint_text">Suggested by (optional)</string>
+    <string name="open_text">Open</string>
+    <string name="close_text">Close</string>
+    <string name="to_text">to</string>
+    <string name="male_text">Male</string>
+    <string name="female_text">Female</string>
+    <string name="settings_text">Settings</string>
 
 
 </resources>

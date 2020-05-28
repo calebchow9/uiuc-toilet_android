@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="main">#13294b</color>
+    <color name="secondary">#e84a27</color>
+    <color name="main_light">#405177</color>
+    <color name="main_dark">#000023</color>
+
     <color name="male">#3333ff</color>
     <color name="female">#cc00cc</color>
+
+    <color name="white_text">#F0F0F0</color>
+    <color name="grey_text">#828282</color>
 </resources>
