@@ -5,14 +5,14 @@ public class Bathroom {
     private String name;
     private String gender;
 
-    private double openTime;
-    private double closeTime;
+    private String openTime;
+    private String closeTime;
 
     private double longitude;
     private double latitude;
     private double distanceFromUser;
 
-    public Bathroom(String id, String name, String gender, double openTime, double closeTime, double latitude, double longitude, double distanceFromUser) {
+    public Bathroom(String id, String name, String gender, String openTime, String closeTime, double latitude, double longitude, double distanceFromUser) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -47,19 +47,19 @@ public class Bathroom {
         this.gender = gender;
     }
 
-    public double getOpenTime() {
+    public String getOpenTime() {
         return openTime;
     }
 
-    public void setOpenTime(double openTime) {
+    public void setOpenTime(String openTime) {
         this.openTime = openTime;
     }
 
-    public double getCloseTime() {
+    public String getCloseTime() {
         return closeTime;
     }
 
-    public void setCloseTime(double closeTime) {
+    public void setCloseTime(String closeTime) {
         this.closeTime = closeTime;
     }
 

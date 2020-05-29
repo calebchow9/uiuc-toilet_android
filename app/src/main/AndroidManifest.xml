@@ -19,7 +19,7 @@
         android:supportsRtl="true">
         <activity
             android:name=".ListActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme"
             android:label="Nearby"/>
         <activity
             android:name=".AddActivity"

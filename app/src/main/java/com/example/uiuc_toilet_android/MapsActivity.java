@@ -261,8 +261,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 String gender = br.getString("gender");
                                 double brLatitude = Double.parseDouble(br.getString("latitude"));
                                 double brLongitude = Double.parseDouble(br.getString("longitude"));
-                                double openTime = br.getDouble("openTime");
-                                double closeTime = br.getDouble("closeTime");
+                                String openTime = br.getString("openTime");
+                                String closeTime = br.getString("closeTime");
                                 float[] distance = new float[1];
                                 distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
                                 double locationDistance = distance[0];

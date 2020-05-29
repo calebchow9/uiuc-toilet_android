@@ -2,6 +2,7 @@ package com.example.uiuc_toilet_android;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -71,9 +72,10 @@ public class ListActivity extends AppCompatActivity{
 //        editor.putString("favorites",  "");
 //        editor.commit();
 
+        final Intent intent = getIntent();
         //initialize bottom navigation bar
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_map);
+        final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_list);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -213,12 +215,12 @@ public class ListActivity extends AppCompatActivity{
                                 String gender = br.getString("gender");
                                 double brLatitude = Double.parseDouble(br.getString("latitude"));
                                 double brLongitude = Double.parseDouble(br.getString("longitude"));
-                                double openTime = br.getDouble("openTime");
-                                double closeTime = br.getDouble("closeTime");
+                                String openTime = br.getString("openTime");
+                                String closeTime = br.getString("closeTime");
                                 float[] distance = new float[1];
                                 distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
                                 double locationDistance = distance[0];
-                                Bathroom bathroom = new Bathroom (id, name, gender, brLatitude, brLongitude, openTime, closeTime, locationDistance);
+                                Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance);
                                 brList.add(bathroom);
                             }
                             adapter.notifyDataSetChanged();
@@ -343,12 +345,12 @@ public class ListActivity extends AppCompatActivity{
                             String gender = response.getString("gender");
                             double brLatitude = Double.parseDouble(response.getString("latitude"));
                             double brLongitude = Double.parseDouble(response.getString("longitude"));
-                            double openTime = response.getDouble("openTime");
-                            double closeTime = response.getDouble("closeTime");
+                            String openTime = response.getString("openTime");
+                            String closeTime = response.getString("closeTime");
                             float[] distance = new float[1];
                             distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
                             double locationDistance = distance[0];
-                            Bathroom bathroom = new Bathroom (id, name, gender, brLatitude, brLongitude, openTime, closeTime, locationDistance);
+                            Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance);
                             brList.add(bathroom);
                             adapter.notifyDataSetChanged();
                         }

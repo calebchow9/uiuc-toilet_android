@@ -22,15 +22,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
     public static class BRViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         TextView distance;
-        ImageView male;
-        ImageView female;
+        View male;
+        View female;
 
         public BRViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.bathroom_name);
             distance = itemView.findViewById(R.id.distance);
-            male = itemView.findViewById(R.id.ic_male);
-            female = itemView.findViewById(R.id.ic_female);
+            male = itemView.findViewById(R.id.male_bar);
+            female = itemView.findViewById(R.id.female_bar);
         }
 
     }
@@ -41,7 +41,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
 
     @Override
     public BRViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bathroom, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bathroom_2, parent, false);
         return new BRViewHolder(v);
     }
 
@@ -55,26 +55,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
 
         switch(currentItem.getGender()){
             case "Male":
-                holder.male.setColorFilter(res.getColor(R.color.male));
+                holder.male.setBackgroundColor(res.getColor(R.color.male));
+                holder.male.setVisibility(View.VISIBLE);
                 break;
             case "Female":
-                holder.female.setColorFilter(res.getColor(R.color.female));
+                holder.female.setBackgroundColor(res.getColor(R.color.female));
+                holder.female.setVisibility(View.VISIBLE);
             case "Both":
-                holder.male.setColorFilter(res.getColor(R.color.male));
-                holder.female.setColorFilter(res.getColor(R.color.female));
+                holder.male.setBackgroundColor(res.getColor(R.color.male));
+                holder.female.setBackgroundColor(res.getColor(R.color.female));
+                holder.male.setVisibility(View.VISIBLE);
+                holder.female.setVisibility(View.VISIBLE);
             default:
         }
 
-        //on click, open specific SpaceActivity page
 //        holder.itemView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Intent openSpace = new Intent(v.getContext(), SpaceActivity.class);
-//                Bathroom br = brList.get(position);
-//                String spaceString = new Gson().toJson(space);
-//                Log.d("export", spaceString);
-//                openSpace.putExtra("space", spaceString);
-//                v.getContext().startActivity(openSpace);
 //            }
 //        });
     }
