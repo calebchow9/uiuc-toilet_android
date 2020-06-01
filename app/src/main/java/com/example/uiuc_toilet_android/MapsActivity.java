@@ -9,6 +9,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.icu.util.Calendar;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -36,6 +37,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -54,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.location.Location.distanceBetween;
+import static com.example.uiuc_toilet_android.ListAdapter.parseDistance;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private String BASE_URL = "http://192.168.3.10:3000";
@@ -64,6 +67,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final LatLng mDefaultLocation = new LatLng(40.107861, -88.227225);
     private static final int DEFAULT_ZOOM = 18;
     private static final String TAG = "tag";
+    boolean init_zoom = true;
 
     private double latitude;
     private double longitude;
@@ -132,12 +136,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_maps, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu_maps, menu);
+//        return true;
+//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -159,9 +163,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(mLastKnownLocation.getLatitude(),
-                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), 18));
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
@@ -189,7 +191,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             // If user moved, move the camera to center on the new location
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
-                                if(mLastKnownLocation.getLatitude() - prev_latitude != 0 || mLastKnownLocation.getLongitude() - prev_longitude != 0){
+                                if(Math.abs(mLastKnownLocation.getLatitude() - prev_latitude) > 0.00004491576 || Math.abs(mLastKnownLocation.getLongitude() - prev_longitude) > 0.00004491576){ // >5m
                                     Log.d("tag", "moved");
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), zoom));
                                     getMarkers(latitude, longitude);
@@ -231,7 +233,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (mLocationPermissionGranted) {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                mMap.setPadding(0, 120, 0, 0);
+                mMap.getUiSettings().setMapToolbarEnabled(false);
+//                mMap.setPadding(0, 120, 0, 0);
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -266,14 +269,53 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 float[] distance = new float[1];
                                 distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
                                 double locationDistance = distance[0];
-                                Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance);
+                                boolean status = false;
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                                    Calendar rightNow = Calendar.getInstance();
+                                    int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+                                    int minute = rightNow.get(Calendar.MINUTE);
+                                    double now = hour + (minute*0.01);
+                                    openTime = openTime.replace(":", ".");
+                                    closeTime = closeTime.replace(":", ".");
+                                    double open = Double.parseDouble(openTime);
+                                    double close = Double.parseDouble(closeTime);
+                                    if(now >= open && now <= close){
+                                        status = true;
+                                    }
+                                }
+                                Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance, status);
                                 brList.add(bathroom);
                             }
                             for(int i = 0; i < brList.size(); i++){
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(brList.get(i).getLatitude(), brList.get(i).getLongitude()))
-                                        .title(parseBathroomTitle(brList.get(i)))
-                                        .snippet(parseBathroomInfo(brList.get(i))));
+                                switch(brList.get(i).getGender()){
+                                    case "Male":
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(brList.get(i).getLatitude(), brList.get(i).getLongitude()))
+                                                .title(parseBathroomTitle(brList.get(i)))
+                                                .snippet(parseBathroomInfo(brList.get(i)))
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                                        break;
+                                    case "Female":
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(brList.get(i).getLatitude(), brList.get(i).getLongitude()))
+                                                .title(parseBathroomTitle(brList.get(i)))
+                                                .snippet(parseBathroomInfo(brList.get(i)))
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+                                        break;
+                                    case "Both":
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(brList.get(i).getLatitude(), brList.get(i).getLongitude()))
+                                                .title(parseBathroomTitle(brList.get(i)))
+                                                .snippet(parseBathroomInfo(brList.get(i)))
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                                        break;
+                                    default:
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(brList.get(i).getLatitude(), brList.get(i).getLongitude()))
+                                                .title(parseBathroomTitle(brList.get(i)))
+                                                .snippet(parseBathroomInfo(brList.get(i)))
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                                }
                             }
 
                         }
@@ -328,16 +370,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         prev_longitude = longitude;
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        if(init_zoom){
+            init_zoom = false;
+            getDeviceLocation((float)18.5);
+            return;
+        }
         getDeviceLocation(mMap.getCameraPosition().zoom);
     }
 
     private String parseBathroomTitle(Bathroom br){
-        return br.getName() + ", type: " + br.getGender();
+        if(br.getStatus()){
+            return br.getName() + " [OPEN]";
+        }
+        return br.getName() + " [CLOSED]";
     }
 
     private String parseBathroomInfo(Bathroom br){
         DecimalFormat df = new DecimalFormat("#.#");
-        return  "Distance: " + df.format(br.getDistanceFromUser()) + "m";
+        return  "Distance: " + parseDistance(Double.parseDouble(df.format(br.getDistanceFromUser())));
     }
 
 

@@ -10,7 +10,7 @@
     </style>
 
     <style name="EditText_large">
-        <item name="android:background">@drawable/button_rounded_wide</item>
+        <item name="android:background">@drawable/edittext_round</item>
         <item name="android:backgroundTint">@color/white_text</item>
         <item name="android:textColorHint">@color/grey_text</item>
     </style>

@@ -10,7 +10,8 @@ tools:context=".MapsActivity">
 
 <FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="675dp"
+    android:layout_height="match_parent"
+    android:layout_above="@id/bottom_navigation"
     android:layout_alignParentTop="true">
 
     <androidx.fragment.app.FragmentContainerView

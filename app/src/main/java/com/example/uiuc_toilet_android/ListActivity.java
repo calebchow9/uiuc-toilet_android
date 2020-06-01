@@ -5,14 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.icu.util.Calendar;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,7 +44,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 import static android.location.Location.distanceBetween;
 
@@ -144,14 +152,16 @@ public class ListActivity extends AppCompatActivity{
                 if(!favorite){
                     if(drawable != null){
                         drawable.mutate();
-                        drawable.setColorFilter(getResources().getColor(R.color.female), PorterDuff.Mode.SRC_ATOP);
+                        drawable.setColorFilter(getResources().getColor(R.color.secondary), PorterDuff.Mode.SRC_ATOP);
                     }
                     favorite = true;
                     getFavorites();
+                    setTitle("Favorites");
                     return true;
                 }
                 drawable.clearColorFilter();
                 favorite = false;
+                setTitle("Nearby");
                 getBathrooms(latitude, longitude);
                 return true;
             case R.id.search:
@@ -220,9 +230,33 @@ public class ListActivity extends AppCompatActivity{
                                 float[] distance = new float[1];
                                 distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
                                 double locationDistance = distance[0];
-                                Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance);
+                                boolean status = false;
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                                    Calendar rightNow = Calendar.getInstance();
+                                    int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+                                    int minute = rightNow.get(Calendar.MINUTE);
+                                    double now = hour + (minute*0.01);
+                                    openTime = openTime.replace(":", ".");
+                                    closeTime = closeTime.replace(":", ".");
+                                    double open = Double.parseDouble(openTime);
+                                    double close = Double.parseDouble(closeTime);
+                                    if(now >= open && now <= close){
+                                        status = true;
+                                    }
+                                }
+                                Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance, status);
                                 brList.add(bathroom);
                             }
+                            Collections.sort(brList, new Comparator<Bathroom>() {
+                                @Override
+                                public int compare(Bathroom z1, Bathroom z2) {
+                                    if (z1.getDistanceFromUser() > z2.getDistanceFromUser())
+                                        return 1;
+                                    if (z1.getDistanceFromUser() < z2.getDistanceFromUser())
+                                        return -1;
+                                    return 0;
+                                }
+                            });
                             adapter.notifyDataSetChanged();
                         }
                         catch (Exception e){
@@ -241,6 +275,27 @@ public class ListActivity extends AppCompatActivity{
     }
 
     ItemTouchHelper.SimpleCallback swipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+        @Override
+        public void onChildDraw (Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive){
+
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeRightBackgroundColor(Color.RED)
+                    .addSwipeRightLabel("Favorite")
+                    .setSwipeRightLabelColor(Color.WHITE)
+                    .addSwipeRightActionIcon(R.drawable.ic_favorite_white_24dp)
+                    .setSwipeRightLabelTextSize(TypedValue.COMPLEX_UNIT_SP, 14)
+                    .addSwipeLeftBackgroundColor(Color.BLACK)
+                    .addSwipeLeftLabel("Hide")
+                    .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_SP, 14)
+                    .setSwipeLeftLabelColor(Color.WHITE)
+                    .addSwipeLeftActionIcon(R.drawable.ic_visibility)
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -288,7 +343,10 @@ public class ListActivity extends AppCompatActivity{
                     break;
             }
         }
+
+
     };
+
 
     private void unFavorite(String bathroomName){
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
@@ -320,6 +378,12 @@ public class ListActivity extends AppCompatActivity{
         for(String s : favorites){
             searchBathroom(s);
         }
+        Collections.sort(brList, new Comparator<Bathroom>() {
+            @Override
+            public int compare(Bathroom o1, Bathroom o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
 
     }
 
@@ -350,7 +414,21 @@ public class ListActivity extends AppCompatActivity{
                             float[] distance = new float[1];
                             distanceBetween(latitude, longitude, brLatitude, brLongitude, distance);
                             double locationDistance = distance[0];
-                            Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance);
+                            boolean status = false;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                                Calendar rightNow = Calendar.getInstance();
+                                int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+                                int minute = rightNow.get(Calendar.MINUTE);
+                                double now = hour + (minute*0.01);
+                                openTime = openTime.replace(":", ".");
+                                closeTime = closeTime.replace(":", ".");
+                                double open = Double.parseDouble(openTime);
+                                double close = Double.parseDouble(closeTime);
+                                if(now >= open && now <= close){
+                                    status = true;
+                                }
+                            }
+                            Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance, status);
                             brList.add(bathroom);
                             adapter.notifyDataSetChanged();
                         }

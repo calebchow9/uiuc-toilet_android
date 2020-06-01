@@ -12,7 +12,9 @@ public class Bathroom {
     private double latitude;
     private double distanceFromUser;
 
-    public Bathroom(String id, String name, String gender, String openTime, String closeTime, double latitude, double longitude, double distanceFromUser) {
+    private boolean status;
+
+    public Bathroom(String id, String name, String gender, String openTime, String closeTime, double latitude, double longitude, double distanceFromUser, boolean status) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -21,6 +23,7 @@ public class Bathroom {
         this.longitude = longitude;
         this.latitude = latitude;
         this.distanceFromUser = distanceFromUser;
+        this.status = status;
     }
 
     public String getId() {
@@ -85,5 +88,13 @@ public class Bathroom {
 
     public void setDistanceFromUser(double distanceFromUser) {
         this.distanceFromUser = distanceFromUser;
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

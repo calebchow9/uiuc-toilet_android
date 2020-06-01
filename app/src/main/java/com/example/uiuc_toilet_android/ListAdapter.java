@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> {
@@ -24,6 +25,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
         TextView distance;
         View male;
         View female;
+        View status_bar;
+        TextView hours;
 
         public BRViewHolder(View itemView) {
             super(itemView);
@@ -31,6 +34,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
             distance = itemView.findViewById(R.id.distance);
             male = itemView.findViewById(R.id.male_bar);
             female = itemView.findViewById(R.id.female_bar);
+            status_bar = itemView.findViewById(R.id.status_bar);
+            hours = itemView.findViewById(R.id.hours_text);
         }
 
     }
@@ -53,21 +58,35 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
         holder.name.setText(currentItem.getName());
         holder.distance.setText(parseDistance(currentItem.getDistanceFromUser()));
 
+        String hours = currentItem.getOpenTime() + " - " + currentItem.getCloseTime();
+        holder.hours.setText(hours);
+
         switch(currentItem.getGender()){
             case "Male":
                 holder.male.setBackgroundColor(res.getColor(R.color.male));
                 holder.male.setVisibility(View.VISIBLE);
+                holder.female.setVisibility(View.INVISIBLE);
                 break;
             case "Female":
-                holder.female.setBackgroundColor(res.getColor(R.color.female));
-                holder.female.setVisibility(View.VISIBLE);
+                holder.male.setBackgroundColor(res.getColor(R.color.female));
+                holder.male.setVisibility(View.VISIBLE);
+                holder.female.setVisibility(View.INVISIBLE);
+                break;
             case "Both":
                 holder.male.setBackgroundColor(res.getColor(R.color.male));
                 holder.female.setBackgroundColor(res.getColor(R.color.female));
                 holder.male.setVisibility(View.VISIBLE);
                 holder.female.setVisibility(View.VISIBLE);
+                break;
             default:
         }
+
+        if(currentItem.getStatus()){
+            holder.status_bar.setBackgroundColor(res.getColor(R.color.open));
+        } else{
+            holder.status_bar.setBackgroundColor(res.getColor(R.color.closed));
+        }
+        holder.status_bar.setVisibility(View.VISIBLE);
 
 //        holder.itemView.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -76,14 +95,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
 //        });
     }
 
-    private static String parseDistance(double distance) {
+    public static String parseDistance(double distance) {
         double distanceKM = distance/1000; //convert to km
-        if (distanceKM >= 1000) {
-            return ">999KM";
+        if (distanceKM >= 10) {
+            return ">10km";
         } else if (distanceKM >= 1) {
-            return  distanceKM + "km away";
+            DecimalFormat df = new DecimalFormat("#.#");
+            return df.format(distanceKM) + "km";
         } else {
-            return Math.round(distance) + "m away";
+            return Math.round(distance) + "m";
         }
     }
 
