@@ -53,7 +53,7 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import static android.location.Location.distanceBetween;
 
 public class ListActivity extends AppCompatActivity{
-    private String BASE_URL = "http://192.168.3.10:3000";
+    private String BASE_URL = "https://uiuc-toilet.herokuapp.com";
     RecyclerView recyclerView;
     ListAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
@@ -74,12 +74,6 @@ public class ListActivity extends AppCompatActivity{
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.main)));
         }
 
-//        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-//        String curre = sharedPref.getString("favorites", "");
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//        editor.putString("favorites",  "");
-//        editor.commit();
-
         final Intent intent = getIntent();
         //initialize bottom navigation bar
         final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -89,11 +83,13 @@ public class ListActivity extends AppCompatActivity{
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_map:
-                        finish();
+                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
                         overridePendingTransition(0, 0);
                         return true;
                     case R.id.nav_list:
                         return true;
+                    case R.id.nav_settings:
+                        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 }
                 return false;
             }
@@ -247,6 +243,7 @@ public class ListActivity extends AppCompatActivity{
                                 Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance, status);
                                 brList.add(bathroom);
                             }
+                            //sort by distance away
                             Collections.sort(brList, new Comparator<Bathroom>() {
                                 @Override
                                 public int compare(Bathroom z1, Bathroom z2) {
@@ -257,6 +254,10 @@ public class ListActivity extends AppCompatActivity{
                                     return 0;
                                 }
                             });
+                            //take first 20
+                            if(brList.size() >20){
+                                brList.subList(20, brList.size()).clear();
+                            }
                             adapter.notifyDataSetChanged();
                         }
                         catch (Exception e){

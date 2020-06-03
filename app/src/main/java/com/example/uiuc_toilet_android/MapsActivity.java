@@ -33,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,13 +54,15 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static android.location.Location.distanceBetween;
 import static com.example.uiuc_toilet_android.ListAdapter.parseDistance;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private String BASE_URL = "http://192.168.3.10:3000";
+    private String BASE_URL = "https://uiuc-toilet.herokuapp.com";
     private List<Bathroom> brList = new ArrayList<>();
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -97,11 +100,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null){
-            mapFragment.getMapAsync(this);
-        }
+        setupMapIfNeeded();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -130,18 +129,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         startActivity(new Intent(getApplicationContext(), ListActivity.class));
                         overridePendingTransition(0, 0);
                         return true;
+                    case R.id.nav_settings:
+                        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                        return true;
                 }
                 return false;
             }
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.menu_maps, menu);
-//        return true;
-//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -150,6 +146,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getLocationPermission();
         updateLocationUI();
         getInitialDeviceLocation();
+
+        MapStateManager mgr = new MapStateManager(this);
+        CameraPosition position = mgr.getSavedCameraPosition();
+        if (position != null) {
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            mMap.moveCamera(update);
+
+            mMap.setMapType(mgr.getSavedMapType());
+        }
     }
 
     private void getInitialDeviceLocation() {
@@ -286,6 +291,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 Bathroom bathroom = new Bathroom (id, name, gender, openTime, closeTime, brLatitude, brLongitude, locationDistance, status);
                                 brList.add(bathroom);
                             }
+                            Collections.sort(brList, new Comparator<Bathroom>() {
+                                @Override
+                                public int compare(Bathroom z1, Bathroom z2) {
+                                    if (z1.getDistanceFromUser() > z2.getDistanceFromUser())
+                                        return 1;
+                                    if (z1.getDistanceFromUser() < z2.getDistanceFromUser())
+                                        return -1;
+                                    return 0;
+                                }
+                            });
+                            //first 20
+                            if(brList.size() >20){
+                                brList.subList(20, brList.size()).clear();
+                            }
                             for(int i = 0; i < brList.size(); i++){
                                 switch(brList.get(i).getGender()){
                                     case "Male":
@@ -378,6 +397,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getDeviceLocation(mMap.getCameraPosition().zoom);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MapStateManager mgr = new MapStateManager(this);
+        mgr.saveMapState(mMap);
+    }
+
     private String parseBathroomTitle(Bathroom br){
         if(br.getStatus()){
             return br.getName() + " [OPEN]";
@@ -388,6 +414,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String parseBathroomInfo(Bathroom br){
         DecimalFormat df = new DecimalFormat("#.#");
         return  "Distance: " + parseDistance(Double.parseDouble(df.format(br.getDistanceFromUser())));
+    }
+
+    private void setupMapIfNeeded() {
+        if (mMap == null) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
     }
 
 
