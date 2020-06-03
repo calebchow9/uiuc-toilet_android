@@ -331,7 +331,6 @@ public class ListActivity extends AppCompatActivity{
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("favorites", curr + bathroomName + ",");
                     editor.commit();
-                    Log.d("favorites", sharedPref.getString("Favorites", ""));
 
                     Snackbar.make(recyclerView, "Favorited " + brList.get(position).getName(), Snackbar.LENGTH_LONG)
                             .setAction("Undo", new View.OnClickListener() {
@@ -352,7 +351,6 @@ public class ListActivity extends AppCompatActivity{
     private void unFavorite(String bathroomName){
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         String curr = sharedPref.getString("favorites", "");
-        Log.d("fav", curr);
         String[] favorites = curr.split(",");
         for(int i = 0; i < favorites.length; i++){
             if(favorites[i].equals(bathroomName)){
@@ -365,7 +363,6 @@ public class ListActivity extends AppCompatActivity{
                 sb.append(s).append(",");
             }
         }
-        Log.d("removed", sb.toString());
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("favorites", sb.toString());
         editor.commit();

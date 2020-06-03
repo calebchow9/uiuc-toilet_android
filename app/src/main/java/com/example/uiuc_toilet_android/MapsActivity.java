@@ -197,7 +197,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
                                 if(Math.abs(mLastKnownLocation.getLatitude() - prev_latitude) > 0.00004491576 || Math.abs(mLastKnownLocation.getLongitude() - prev_longitude) > 0.00004491576){ // >5m
-                                    Log.d("tag", "moved");
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), zoom));
                                     getMarkers(latitude, longitude);
                                 }
@@ -207,7 +206,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
             }
         } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -247,7 +246,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 getLocationPermission();
             }
         } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -382,8 +381,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onLocationChanged(Location location) {
-        String msg = "Updated Location: " + location.getLatitude() + "," + location.getLongitude();
-        Log.d("location", msg);
+//        String msg = "Updated Location: " + location.getLatitude() + "," + location.getLongitude();
+//        Log.d("location", msg);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         prev_latitude = latitude;
         prev_longitude = longitude;
@@ -420,7 +419,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mMap == null) {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            if(mapFragment != null){
+                mapFragment.getMapAsync(this);
+            }
         }
     }
 
