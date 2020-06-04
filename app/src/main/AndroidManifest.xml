@@ -37,13 +37,16 @@
         <activity
             android:name=".MapsActivity"
             android:theme="@style/ClearTheme">
+        </activity>
+        <activity android:name=".SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".SplashActivity"
+            android:theme="@style/ClearTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

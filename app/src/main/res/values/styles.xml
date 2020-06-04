@@ -26,8 +26,11 @@
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="colorPrimaryDark">@color/main</item>
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@drawable/splash_screen</item>
         <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="ClearTheme.Launcher">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 
     <style name="MainTheme">
