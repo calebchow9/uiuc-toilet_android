@@ -88,11 +88,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
         }
         holder.status_bar.setVisibility(View.VISIBLE);
 
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//            }
-//        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toDetails = new Intent(v.getContext(), BathroomActivity.class);
+                toDetails.putExtra("id", currentItem.getId());
+                toDetails.putExtra("lat", currentItem.getLatitude());
+                toDetails.putExtra("long", currentItem.getLongitude());
+                v.getContext().startActivity(toDetails);
+            }
+        });
     }
 
     public static String parseDistance(double distance) {

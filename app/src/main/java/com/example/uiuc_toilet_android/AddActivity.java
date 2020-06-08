@@ -136,7 +136,10 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if(mapFragment != null){
+            mapFragment.getMapAsync(this);
+        }
+
 
         back_button = findViewById(R.id.button_back);
         back_button.setOnClickListener(new View.OnClickListener() {
