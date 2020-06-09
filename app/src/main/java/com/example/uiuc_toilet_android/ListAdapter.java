@@ -58,7 +58,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
         holder.name.setText(currentItem.getName());
         holder.distance.setText(parseDistance(currentItem.getDistanceFromUser()));
 
-        String hours = currentItem.getOpenTime() + " - " + currentItem.getCloseTime();
+        String hours;
+        if(currentItem.getCloseTime().equals("23:59") || currentItem.getCloseTime().equals("24:00")){
+            hours = currentItem.getOpenTime() + " - " + "0:00";
+        } else{
+            hours = currentItem.getOpenTime() + " - " + currentItem.getCloseTime();
+        }
+
         holder.hours.setText(hours);
 
         switch(currentItem.getGender()){
@@ -95,6 +101,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.BRViewHolder> 
                 toDetails.putExtra("id", currentItem.getId());
                 toDetails.putExtra("lat", currentItem.getLatitude());
                 toDetails.putExtra("long", currentItem.getLongitude());
+                toDetails.putExtra("gender", currentItem.getGender());
                 v.getContext().startActivity(toDetails);
             }
         });

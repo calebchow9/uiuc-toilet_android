@@ -80,7 +80,9 @@
 
     <RatingBar
         android:id="@+id/ratingBar"
+        android:isIndicator="true"
         style="?android:attr/ratingBarStyleSmall"
+        android:rating="0.0"
         android:scaleY="1.5"
         android:scaleX="1.5"
         android:max="5"
@@ -92,6 +94,18 @@
         android:layout_marginLeft="25dp" />
 
     <TextView
+        android:id="@+id/numRatings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_toEndOf="@id/ratingBar"
+        android:layout_below="@id/time"
+        android:layout_marginTop="3dp"
+        android:text="()"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@id/ratingBar" />
+
+    <TextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -101,13 +115,24 @@
         android:layout_marginLeft="25dp" />
 
     <TextView
-        android:id="@+id/comments"
+        android:id="@+id/comments_text"
         android:layout_width="wrap_content"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_below="@id/ratingBar"
         android:layout_marginTop="5dp"
         android:text="Comments"
+        android:textStyle="bold"
+        android:textColor="@color/main"
+        android:layout_marginLeft="25dp" />
+
+    <TextView
+        android:id="@+id/comments"
+        android:layout_width="wrap_content"
+        android:layout_height="125dp"
+        android:layout_marginStart="25dp"
+        android:layout_below="@id/comments_text"
+        android:text=""
         android:layout_marginLeft="25dp" />
 
     <RelativeLayout
@@ -123,12 +148,25 @@
             android:id="@+id/set_ratingBar"
             android:scaleX="1.25"
             android:scaleY="1.25"
+            android:isIndicator="false"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:id="@+id/rating_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@id/set_ratingBar"
+            android:layout_marginTop="3dp"
+            android:text="( )"
+            android:textColor="@color/light_gray"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/set_ratingBar" />
 
         <View
             android:id="@+id/bar_view"
@@ -143,7 +181,7 @@
             android:layout_width="match_parent"
             android:layout_below="@id/bar_view"
             android:layout_height="wrap_content"
-            android:hint="Add a comment about your experience"
+            android:hint="Add a comment about your experience (optional)"
             android:layout_marginTop="5dp"
             android:background="@android:color/transparent"
             android:ems="10"

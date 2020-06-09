@@ -32,6 +32,7 @@
     <string name="male_text">Male</string>
     <string name="female_text">Female</string>
     <string name="settings_text">Settings</string>
+    <string name="comments_null">No comments yet</string>
 
 
 </resources>

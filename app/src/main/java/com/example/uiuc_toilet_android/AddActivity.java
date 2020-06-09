@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -34,7 +35,7 @@ import org.json.JSONObject;
 import static android.location.Location.distanceBetween;
 
 public class AddActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private String BASE_URL = "http://192.168.3.10:3000";
+    private String BASE_URL = "https://uiuc-toilet.herokuapp.com";
     private GoogleMap mMap;
 
     EditText name;
@@ -151,15 +152,22 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
         create = findViewById(R.id.button_add);
         create.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
+                if(close.getText().toString().equals("0:00")){
+                    close.setText("24:00");
+                }
                 if(male_clicked && female_clicked){
                     addBathroom(name.getText().toString(), latitude, longitude, "Both", open.getText().toString(), close.getText().toString(), username.getText().toString());
                 } else if (male_clicked){
                     addBathroom(name.getText().toString(), latitude, longitude, "Male", open.getText().toString(), close.getText().toString(), username.getText().toString());
                 } else if (female_clicked){
                     addBathroom(name.getText().toString(), latitude, longitude, "Female", open.getText().toString(), close.getText().toString(), username.getText().toString());
+                } else{
+                    addBathroom(name.getText().toString(), latitude, longitude, "Both", open.getText().toString(), close.getText().toString(), username.getText().toString());
                 }
+                Toast.makeText(getApplicationContext(), "Bathroom added!", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
