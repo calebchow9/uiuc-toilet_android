@@ -2,7 +2,7 @@
 A simple app built in Android Studio in Java, with support for API 16+ (Android version 4.1+). Created by me for fun.
 
 ## Screenshots
-Checkout the app on the Google Play store here for the full screenshots.
+Checkout the app on the [Google Play store](https://play.google.com/store/apps/details?id=com.cc.uiuc_toilet_android) here for the full screenshots.
 
 <p float="left">
   <img src="/images/maps.png" width="300" />
