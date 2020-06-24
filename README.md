@@ -24,7 +24,9 @@ Checkout the app on the [Google Play store](https://play.google.com/store/apps/d
 ## Notes
 Information is stored using a REST API into a MongoDB database. No user information is collected, simply the resources needed to display bathroom information. API is hosted on heroku at: https://uiuc-toilet.herokuapp.com
 
-## Installation
-a.) Install the app through the .apk in release (make sure to allow installation from unknown sources).
+## Installation options
+a.) I've published the app on the Google Play Store. Find it [here!](https://play.google.com/store/apps/details?id=com.cc.uiuc_toilet_android)
 
-b.) Clone this repo, build the gradle in Android Studio and run the app through an AVD (virtual device).
+b.) Install the app through the .apk in release (make sure to allow installation from unknown sources).
+
+c.) Clone this repo, build the gradle in Android Studio and run the app through an AVD (virtual device).
